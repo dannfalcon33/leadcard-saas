@@ -101,3 +101,25 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+
+
+  -- Tabla simple para contar visitas
+create table public.visits (
+  id uuid default gen_random_uuid() primary key,
+  project_id uuid references public.projects(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Seguridad: Cualquiera puede crear (visitar), solo el dueño puede ver (contar)
+alter table public.visits enable row level security;
+
+create policy "Registrar visitas públicas" 
+  on public.visits for insert with check (true);
+
+create policy "Ver visitas propias" 
+  on public.visits for select using (
+    auth.uid() in (
+      select user_id from public.projects where id = visits.project_id
+    )
+  );

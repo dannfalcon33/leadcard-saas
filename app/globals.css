@@ -1,5 +1,41 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-float-slow: float-slow 8s infinite ease-in-out;
+  --animate-float-reverse: float-reverse 10s infinite ease-in-out;
+  --animate-pulse-slow: pulse-slow 6s infinite ease-in-out;
+
+  @keyframes float-slow {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-30px);
+    }
+  }
+  @keyframes float-reverse {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(30px);
+    }
+  }
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.2;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(1.1);
+    }
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
