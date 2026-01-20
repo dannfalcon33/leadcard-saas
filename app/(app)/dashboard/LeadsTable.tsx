@@ -69,7 +69,7 @@ export default function LeadsTable({ leads }: { leads: any[] }) {
                   key={lead.id}
                   className="border-b border-white/5 hover:bg-white/5"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4" suppressHydrationWarning>
                     {new Date(lead.created_at).toLocaleDateString()}
                   </td>
                   {Object.values(lead.data).map((val: any, i) => (

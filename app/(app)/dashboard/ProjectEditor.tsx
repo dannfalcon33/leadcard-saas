@@ -71,12 +71,6 @@ export default function ProjectEditor({
       <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Editar Contenido</h2>
-          <a
-            href="/dashboard"
-            className="text-xs bg-white/10 hover:bg-white/20 px-3 py-1 rounded transition text-gray-300"
-          >
-            ← Volver
-          </a>
         </div>
 
         <div className="space-y-4">
