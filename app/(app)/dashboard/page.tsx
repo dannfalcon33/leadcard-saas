@@ -4,6 +4,8 @@ import ProjectEditor from "./ProjectEditor";
 import LeadsTable from "./LeadsTable"; // Importamos la tabla
 import { revalidatePath } from "next/cache";
 
+export const runtime = "edge";
+
 export default async function Dashboard() {
   const supabase = await createClient();
   const {

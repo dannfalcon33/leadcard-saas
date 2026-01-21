@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import PublicForm from "@/app/components/PublicForm";
 import { notFound } from "next/navigation";
 
+export const runtime = "edge";
+
 // Esto le dice a Next.js que esta página es dinámica y no debe cachearse estáticamente
 export const dynamic = "force-dynamic";
 
