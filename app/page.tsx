@@ -4,6 +4,8 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
 import Benefits from "./components/Benefits";
+import CTASection from "./components/CTASection";
+import Testimonials from "./components/Testimonials";
 import Footer from "./components/Footer";
 
 export default function LandingPage() {
@@ -13,6 +15,8 @@ export default function LandingPage() {
       <Hero />
       <HowItWorks />
       <Benefits />
+      <Testimonials />
+      <CTASection />
       <Footer />
     </div>
   );

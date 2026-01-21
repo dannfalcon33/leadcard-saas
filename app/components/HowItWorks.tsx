@@ -1,29 +1,34 @@
+import Image from "next/image";
+import iconList from "../assets/icon-captar.webp";
+import iconLightning from "../assets/icon-rayo.webp";
+import iconGraphic from "../assets/icon-grafico.webp";
+
 export default function HowItWorks() {
   const steps = [
     {
       id: 1,
       title: "Introduce tus datos",
-      desc: "Llena tu perfil con enlaces, bio y foto.",
-      icon: "📝",
+      desc: "Llena tu Landing Card con enlaces, biografía y foto.",
+      icon: iconList,
     },
     {
       id: 2,
       title: "Genera tu LeadCard",
-      desc: "Obtén un enlace único para compartir.",
-      icon: "⚡",
+      desc: "Obtén un enlace único para compartir ya listo en segundos.",
+      icon: iconLightning,
     },
     {
       id: 3,
       title: "Capta Leads",
       desc: "Los visitantes te contactan y guardamos sus datos.",
-      icon: "📈",
+      icon: iconGraphic,
     },
   ];
 
   return (
     <section className="py-24 px-4 bg-black relative">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-bold text-center mb-20 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+        <h2 className="text-3xl md:text-5xl font-bold text-center mb-20 text-indigo-600">
           ¿Cómo funciona?
         </h2>
 
@@ -34,20 +39,23 @@ export default function HowItWorks() {
           {steps.map((step) => (
             <div
               key={step.id}
-              className="relative z-10 bg-gray-900 border border-gray-800 p-8 rounded-2xl max-w-sm w-full text-center hover:border-blue-500/50 transition-colors duration-300 shadow-2xl"
+              className="relative z-10 bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center hover:bg-white/5 transition-all duration-300 shadow-xl hover:-translate-y-2"
             >
-              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-gray-800 to-black rounded-full flex items-center justify-center text-3xl mb-6 border border-gray-700 shadow-inner">
-                {step.icon}
+              <div className="w-16 h-16 mx-auto bg-white/5 rounded-full flex items-center justify-center text-3xl mb-6 border border-white/10 shadow-inner">
+                {typeof step.icon === "string" ? (
+                  step.icon
+                ) : (
+                  <Image
+                    src={step.icon}
+                    alt={step.title}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                )}
               </div>
-              <h3 className="text-xl font-bold mb-3 text-white">
+              <h3 className="text-xl font-bold mb-3 text-indigo-400">
                 {step.title}
               </h3>
-              <p className="text-gray-400">{step.desc}</p>
-
-              {/* Step Number Badge */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm font-bold border-2 border-black">
-                {step.id}
-              </div>
+              <p className="text-indigo-200">{step.desc}</p>
             </div>
           ))}
         </div>

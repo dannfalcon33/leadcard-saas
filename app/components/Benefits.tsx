@@ -1,3 +1,5 @@
+import BackgroundShapes from "./BackgroundShapes";
+
 export default function Benefits() {
   const benefits = [
     {
@@ -23,7 +25,8 @@ export default function Benefits() {
   ];
 
   return (
-    <section className="py-24 px-4 bg-gray-950 border-t border-gray-900">
+    <section className="relative py-24 px-4 text-center overflow-hidden">
+      <BackgroundShapes />
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl md:text-5xl font-bold text-center mb-16 text-white">
           Todo lo que necesitas para{" "}
