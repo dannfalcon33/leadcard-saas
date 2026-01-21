@@ -1,7 +1,4 @@
 import Image from "next/image";
-import iconList from "../assets/icon-captar.webp";
-import iconLightning from "../assets/icon-rayo.webp";
-import iconGraphic from "../assets/icon-grafico.webp";
 
 export default function HowItWorks() {
   const steps = [
@@ -9,19 +6,19 @@ export default function HowItWorks() {
       id: 1,
       title: "Introduce tus datos",
       desc: "Llena tu Landing Card con enlaces, biografía y foto.",
-      icon: iconList,
+      icon: "/assets/icon-captar.webp",
     },
     {
       id: 2,
       title: "Genera tu LeadCard",
       desc: "Obtén un enlace único para compartir ya listo en segundos.",
-      icon: iconLightning,
+      icon: "/assets/icon-rayo.webp",
     },
     {
       id: 3,
       title: "Capta Leads",
       desc: "Los visitantes te contactan y guardamos sus datos.",
-      icon: iconGraphic,
+      icon: "/assets/icon-grafico.webp",
     },
   ];
 
