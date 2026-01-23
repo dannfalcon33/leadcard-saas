@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface Project {
   id: string;
@@ -16,7 +16,6 @@ interface Project {
 
 export default function ProjectEditor({
   project,
-  username,
 }: {
   project: Project;
   username: string;
@@ -54,118 +53,73 @@ export default function ProjectEditor({
     setLoading(false);
   };
 
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setOrigin(window.location.origin);
-    }
-  }, []);
-
-  // URL pública de su landing
-  const publicUrl = origin ? `${origin}/${username}` : "";
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* COLUMNA IZQUIERDA: EL EDITOR */}
-      <div className="bg-white/5 border border-white/10 p-6 rounded-xl">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Editar Contenido</h2>
+    <div className="bg-[#111827] border border-gray-800 p-6 rounded-2xl h-full">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-gray-200 font-bold">Editar Contenido</h3>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <label className="text-xs text-gray-500 uppercase font-bold block mb-2">
+            Título Principal
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            className="w-full bg-black/50 border border-gray-700 p-3 rounded-lg text-gray-300 text-sm focus:border-blue-500 focus:outline-none transition-colors"
+          />
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">
-              Título Principal
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              className="w-full bg-black/50 border border-white/10 p-2 rounded text-white"
-            />
-          </div>
+        <div>
+          <label className="text-xs text-gray-500 uppercase font-bold block mb-2">
+            Descripción (Bio)
+          </label>
+          <textarea
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            rows={3}
+            className="w-full bg-black/50 border border-gray-700 p-3 rounded-lg text-gray-300 text-sm focus:border-blue-500 focus:outline-none transition-colors resize-none"
+          />
+        </div>
 
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">
-              Descripción (Bio)
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              rows={3}
-              className="w-full bg-black/50 border border-white/10 p-2 rounded text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">
-              Color del Tema
-            </label>
-            <div className="flex gap-2">
+        <div>
+          <label className="text-xs text-gray-500 uppercase font-bold block mb-2">
+            Color del Tema
+          </label>
+          <div className="flex items-center gap-3">
+            <div className="relative">
               <input
                 type="color"
                 value={formData.theme_color}
                 onChange={(e) =>
                   setFormData({ ...formData, theme_color: e.target.value })
                 }
-                className="h-10 w-20 cursor-pointer"
+                className="h-10 w-10 rounded-lg cursor-pointer border-0 p-0 overflow-hidden"
               />
-              <span className="text-xs self-center text-gray-500">
-                Elige el color de tus botones
-              </span>
+              <div
+                className="absolute inset-0 pointer-events-none rounded-lg border border-gray-700"
+                style={{ backgroundColor: formData.theme_color }}
+              />
             </div>
-          </div>
-
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition"
-          >
-            {loading ? "Guardando..." : "Guardar Cambios"}
-          </button>
-        </div>
-      </div>
-
-      {/* COLUMNA DERECHA: VISTA PREVIA & LINKS */}
-      <div className="space-y-6">
-        <div className="bg-gradient-to-br from-gray-900 to-black p-6 rounded-xl border border-white/10 text-center">
-          <h3 className="text-gray-400 text-sm uppercase tracking-widest mb-2">
-            Tu Enlace Público
-          </h3>
-          <div className="bg-black/40 p-3 rounded mb-3 font-mono text-sm truncate text-blue-400">
-            {publicUrl}
-          </div>
-          <a
-            href={`/${username}`}
-            target="_blank"
-            className="text-sm text-white underline hover:text-blue-300"
-          >
-            Ver Landing en vivo &rarr;
-          </a>
-        </div>
-
-        {/* PREVISUALIZACIÓN SIMULADA (MÓVIL) */}
-        <div className="border border-white/10 rounded-3xl p-4 max-w-[300px] mx-auto bg-black aspect-[9/16] relative overflow-hidden shadow-2xl">
-          {/* Aquí simulamos cómo se ve la landing */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-            <div className="w-16 h-16 bg-gray-700 rounded-full mb-4"></div>
-            <h2 className="font-bold text-lg leading-tight">
-              {formData.title}
-            </h2>
-            <p className="text-xs text-gray-400 mt-2">{formData.description}</p>
-            <button
-              className="mt-6 w-full py-2 rounded text-xs font-bold"
-              style={{ backgroundColor: formData.theme_color }}
-            >
-              {formData.button_text}
-            </button>
+            <span className="text-xs text-gray-500">
+              Elige el color de tus botones
+            </span>
           </div>
         </div>
+
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Guardando..." : "Guardar Cambios"}
+        </button>
       </div>
     </div>
   );

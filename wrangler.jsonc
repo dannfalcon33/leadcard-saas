@@ -1,7 +1,0 @@
-{
-  "name": "leadcard-saas",
-  "compatibility_date": "2026-01-21",
-  "assets": {
-    "directory": ".vercel/output/static",
-  },
-}

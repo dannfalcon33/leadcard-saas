@@ -6,19 +6,19 @@ export default function HowItWorks() {
       id: 1,
       title: "Introduce tus datos",
       desc: "Llena tu Landing Card con enlaces, biografía y foto.",
-      icon: "/assets/icon-captar.webp",
+      icon: "/icon-captar.png",
     },
     {
       id: 2,
       title: "Genera tu LeadCard",
       desc: "Obtén un enlace único para compartir ya listo en segundos.",
-      icon: "/assets/icon-rayo.webp",
+      icon: "/icon-rayo.png",
     },
     {
       id: 3,
       title: "Capta Leads",
       desc: "Los visitantes te contactan y guardamos sus datos.",
-      icon: "/assets/icon-grafico.webp",
+      icon: "/icon-grafico.png",
     },
   ];
 
@@ -39,15 +39,13 @@ export default function HowItWorks() {
               className="relative z-10 bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center hover:bg-white/5 transition-all duration-300 shadow-xl hover:-translate-y-2"
             >
               <div className="w-16 h-16 mx-auto bg-white/5 rounded-full flex items-center justify-center text-3xl mb-6 border border-white/10 shadow-inner">
-                {typeof step.icon === "string" ? (
-                  step.icon
-                ) : (
-                  <Image
-                    src={step.icon}
-                    alt={step.title}
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                )}
+                <Image
+                  src={step.icon}
+                  alt={step.title}
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover rounded-full"
+                />
               </div>
               <h3 className="text-xl font-bold mb-3 text-indigo-400">
                 {step.title}

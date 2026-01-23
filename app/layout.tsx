@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description:
     "Crea una tarjeta de presentación digital, capta leads y expórtalos a Excel. Sin configurar servidores. Ideal para freelancers.",
   icons: {
-    icon: "/assets/icon-captar.webp", // Using one of the new assets as favicon
+    icon: "/logo-icon.png",
   },
 };
 
