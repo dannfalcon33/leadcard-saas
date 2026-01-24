@@ -16,7 +16,7 @@ La puerta de entrada a la plataforma. Un diseño moderno con gradientes dinámic
 ### 2. Dashboard de Usuario
 
 Donde ocurre la magia. Un panel intuitivo para gestionar tu perfil, ver tus leads capturados y descargar la información.
-![Dashboard de Usuario](screen/dashboard.png)
+![Dashboard de Usuario](screen/dashboard-II.png)
 
 ### 3. Tu LeadCard Pública
 
