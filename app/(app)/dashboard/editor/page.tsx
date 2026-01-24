@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import ProjectEditor from "../ProjectEditor";
+import { PublicLinkBox } from "@/app/components/Dashboard/PublicLinkBox";
 
 export const runtime = "edge";
 
@@ -42,6 +43,8 @@ export default async function EditorPage() {
           Personaliza el contenido y diseño de tu tarjeta.
         </p>
       </div>
+
+      <PublicLinkBox username={profile?.username || "user"} />
 
       <div className="grid grid-cols-1 gap-8">
         <ProjectEditor

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { VisitsChart } from "@/app/components/Dashboard/VisitsChart";
 import { LeadsPieChart } from "@/app/components/Dashboard/LeadsPieChart";
 import { revalidatePath } from "next/cache";
+import { PublicLinkBox } from "@/app/components/Dashboard/PublicLinkBox";
 
 /* Helpers for UI */
 function StatCard({
@@ -144,6 +145,11 @@ export default async function Dashboard() {
           Server Status: Online
         </div>
       </div>
+
+      {/* Public Link Box */}
+      {profile && profile.username && (
+        <PublicLinkBox username={profile.username} />
+      )}
 
       {/* Row 1: Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
