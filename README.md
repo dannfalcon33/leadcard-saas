@@ -27,58 +27,69 @@ El resultado final. Una tarjeta digital optimizada para móviles donde tus visit
 
 ## ✨ Características Principales
 
-- **Sin Configuración**: No necesitas saber de servidores, dominios o hosting. Todo está listo para usar.
-- **Autenticación Magic Link**: Olvídate de contraseñas. Accede de forma segura con un enlace enviado a tu correo.
-- **Captación de Leads**: Formulario integrado en tu tarjeta pública para que los interesados te contacten fácilmente.
-- **Exportación a Excel**: Descarga todos tus contactos con un solo clic para gestionarlos como prefieras.
+- **Neon Lakebase Postgres**: Base de datos serverless de alto rendimiento con branching y escalado a cero.
+- **Neon Auth (Managed Better Auth)**: Autenticación integrada (Google OAuth y correo/contraseña) con gestión de sesiones en Postgres.
+- **Captación de Leads Segura**: Formularios con endpoints protegidos sin exponer la base de datos al navegador.
+- **Métricas y Visitas en Tiempo Real**: Agrupación y cálculo analítico ejecutado directamente en PostgreSQL.
+- **Exportación a Excel / CSV**: Descarga todos tus contactos con un solo clic para gestionarlos como prefieras.
 - **100% Personalizable**: Adapta los colores y estilos para que coincidan con tu marca personal.
-- **Súper Rápido**: Optimizado con Next.js para una carga instantánea y una experiencia de usuario fluida.
+- **Súper Rápido**: Construido con Next.js 16 (App Router) & React 19.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-Este proyecto ha sido construido con las últimas tecnologías web para garantizar rendimiento y escalabilidad:
+Este proyecto ha sido construido con las últimas tecnologías web:
 
-- **Frontend**: [Next.js 15](https://nextjs.org/) (App Router) & [React 19](https://react.dev/)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router & Turbopack) & [React 19](https://react.dev/)
 - **Estilos**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Base de Datos & Auth**: [Supabase](https://supabase.com/)
+- **Base de Datos**: [Neon Lakebase Postgres](https://neon.tech/) vía `@neondatabase/serverless`
+- **Autenticación**: [Neon Auth](https://neon.tech/docs/auth) vía `@neondatabase/auth`
 - **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
 
 ---
 
 ## 🚀 Cómo Empezar (Desarrollo Local)
 
-1.  **Clonar el repositorio:**
+1. **Clonar el repositorio:**
 
-    ```bash
-    git clone https://github.com/dannfalcon33/leadcard-saas.git
-    cd leadcard-saas
-    ```
+   ```bash
+   git clone https://github.com/dannfalcon33/leadcard-saas.git
+   cd leadcard-saas
+   ```
 
-2.  **Instalar dependencias:**
+2. **Instalar dependencias:**
 
-    ```bash
-    npm install
-    # o
-    yarn install
-    ```
+   ```bash
+   npm install
+   ```
 
-3.  **Configurar variables de entorno:**
-    Crea un archivo `.env` en la raíz con tus credenciales de Supabase:
+3. **Vincular con Neon:**
 
-    ```env
-    NEXT_PUBLIC_SUPABASE_URL=tu_url_supabase
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key_supabase
-    ```
+   ```bash
+   neon link
+   ```
+   Esto descargará automáticamente tus variables de entorno (`DATABASE_URL`, `NEON_AUTH_BASE_URL`, etc.) a `.env.local`.
 
-4.  **Correr el servidor de desarrollo:**
+4. **Aplicar migraciones:**
 
-    ```bash
-    npm run dev
-    ```
+   ```bash
+   npm run db:migrate
+   ```
 
-5.  Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+5. **Verificar conexión:**
+
+   ```bash
+   npm run db:check
+   ```
+
+6. **Correr el servidor de desarrollo:**
+
+   ```bash
+   npm run dev
+   ```
+
+7. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ---
 
@@ -87,14 +98,14 @@ Este proyecto ha sido construido con las últimas tecnologías web para garantiz
 **Yoshua Soto** (Dann Falcon Dev)  
 _Fullstack Developer | Especialista en TypeScript_
 
-Creador apasionado por construir aplicaciones que no solo funcionan, sino que asombran. Utilizando la potencia de la IA (Gemini) y tecnologías web modernas, me enfoco en entregar experiencias de usuario (UX) memorables e inmersivas.
+Creador apasionado por construir aplicaciones que no solo funcionan, sino que asombran. Utilizando tecnologías web modernas y arquitecturas serverless, me enfoco en entregar experiencias de usuario memorables e inmersivas.
 
 📫 **Contacto**
 
 - **Email**: yoshuasoto54@gmail.com
 - **WhatsApp**: +58 0422 033 1995
 
-##
+---
 
 ![Falcon Studio Dev](banner.png)
 

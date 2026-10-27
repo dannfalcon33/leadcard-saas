@@ -1,23 +1,16 @@
-import { createClient } from "@/utils/supabase/server";
+import { auth } from "@/utils/auth/server";
+import { getProjectByUserId } from "@/utils/db-service";
 import { redirect } from "next/navigation";
 import { VisitsChart } from "@/app/components/Dashboard/VisitsChart";
 import { LeadsPieChart } from "@/app/components/Dashboard/LeadsPieChart";
 
-export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 export default async function MetricsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: session } = await auth.getSession();
+  if (!session?.user) redirect("/");
 
-  if (!user) redirect("/");
-
-  const { data: project } = await supabase
-    .from("projects")
-    .select("id")
-    .eq("user_id", user.id)
-    .single();
+  const project = await getProjectByUserId(session.user.id);
 
   if (!project) {
     return (
@@ -32,7 +25,7 @@ export default async function MetricsPage() {
       <div>
         <h1 className="text-3xl font-bold text-white mb-2">Métricas</h1>
         <p className="text-gray-400">
-          Analiza el rendimiento de tu Landing Page.
+          Analiza el rendimiento de tu Landing Page en tiempo real.
         </p>
       </div>
 

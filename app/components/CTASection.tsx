@@ -1,32 +1,38 @@
 "use client";
 
-import { createClient } from "@/utils/supabase/client";
+import { authClient } from "@/utils/auth/client";
 import { useState } from "react";
 import BackgroundShapes from "./BackgroundShapes";
+import { useRouter } from "next/navigation";
 
 export default function CTASection() {
-  const supabase = createClient();
+  const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleAuth = async () => {
-    if (!email) return;
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
     setLoading(true);
+    setErrorMsg(null);
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
-      },
-    });
-
-    if (error) {
-      alert("Error: " + error.message);
-    } else {
-      setSent(true);
+    try {
+      const { error } = await authClient.signUp.email({
+        email,
+        password,
+        name: email.split("@")[0],
+        callbackURL: "/dashboard",
+      });
+      if (error) throw new Error(error.message || "Error al crear tu cuenta");
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err: any) {
+      setErrorMsg(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -38,38 +44,44 @@ export default function CTASection() {
           ¿Listo para potenciar tu marca?
         </h2>
         <p className="text-lg md:text-xl text-indigo-200 mb-10 max-w-2xl mx-auto">
-          Únete a miles de profesionales que ya están usando LeadCard para
-          conectar mejor con su audiencia. Sin tarjetas de papel, sin
-          complicaciones.
+          Únete a profesionales que ya usan LeadCard con Neon para captar leads y analizar métricas.
         </p>
 
         {/* Auth Form */}
-        <div className="max-w-md mx-auto w-full">
-          {sent ? (
-            <div className="bg-green-900/30 border border-green-500/50 p-6 rounded-xl text-green-200 shadow-lg backdrop-blur-sm">
-              ¡Correo enviado! Revisa tu bandeja de entrada para acceder con tu
-              Magic Link.
-            </div>
-          ) : (
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 p-4 rounded-xl bg-gray-900/80 border border-gray-800 focus:border-blue-500 outline-none transition-all placeholder:text-gray-600 focus:ring-2 focus:ring-blue-500/20 backdrop-blur-sm text-white"
-              />
-              <button
-                onClick={handleAuth}
-                disabled={loading}
-                className="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-500 transition-all disabled:opacity-50 shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-95 cursor-pointer whitespace-nowrap"
-              >
-                {loading ? "Enviando..." : "Crear mi LeadCard"}
-              </button>
+        <div className="max-w-md mx-auto w-full bg-gray-950/70 border border-gray-800 p-6 rounded-2xl shadow-xl backdrop-blur-md text-left">
+          {errorMsg && (
+            <div className="mb-4 p-3 text-xs bg-red-950/60 border border-red-800/80 rounded-lg text-red-300">
+              {errorMsg}
             </div>
           )}
-          <p className="text-xs text-indigo-300/80 mt-4">
-            Prueba gratuita. No requiere tarjeta de crédito.
+
+          <form onSubmit={handleSignUp} className="space-y-3">
+            <input
+              type="email"
+              placeholder="tu@email.com"
+              value={email}
+              required
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3.5 rounded-xl bg-gray-900/80 border border-gray-800 text-white focus:border-indigo-500 outline-none transition text-sm placeholder:text-gray-600"
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              required
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3.5 rounded-xl bg-gray-900/80 border border-gray-800 text-white focus:border-indigo-500 outline-none transition text-sm placeholder:text-gray-600"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold hover:bg-indigo-500 transition disabled:opacity-50 shadow-lg shadow-indigo-600/20 active:scale-98 cursor-pointer text-sm"
+            >
+              {loading ? "Creando..." : "Crear mi LeadCard"}
+            </button>
+          </form>
+          <p className="text-xs text-indigo-300/80 mt-4 text-center">
+            Prueba gratuita. Desarrollado sobre Neon Lakebase Postgres.
           </p>
         </div>
       </div>

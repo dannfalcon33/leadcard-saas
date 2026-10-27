@@ -1,32 +1,19 @@
-import { createClient } from "@/utils/supabase/server";
+import { auth } from "@/utils/auth/server";
+import { getProjectByUserId, getLeads } from "@/utils/db-service";
 import { redirect } from "next/navigation";
 import LeadsTable from "../LeadsTable";
 
-export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 export default async function LeadsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: session } = await auth.getSession();
+  if (!session?.user) redirect("/");
 
-  if (!user) redirect("/");
-
-  const { data: project } = await supabase
-    .from("projects")
-    .select("id")
-    .eq("user_id", user.id)
-    .single();
-
-  let leads = [];
+  const project = await getProjectByUserId(session.user.id);
+  let leads: any[] = [];
 
   if (project) {
-    const { data: leadsData } = await supabase
-      .from("leads")
-      .select("*")
-      .eq("project_id", project.id)
-      .order("created_at", { ascending: false });
-    leads = leadsData || [];
+    leads = await getLeads(project.id, 100);
   }
 
   return (
@@ -36,7 +23,7 @@ export default async function LeadsPage() {
           <h1 className="text-3xl font-bold text-white mb-2">Mis Leads</h1>
           <p className="text-gray-400">Gestiona los contactos captados.</p>
         </div>
-        <button className="bg-green-600 hover:bg-green-500 text-white text-sm font-bold py-2 px-4 rounded-lg transition">
+        <button className="bg-green-600 hover:bg-green-500 text-white text-sm font-bold py-2 px-4 rounded-lg transition cursor-pointer">
           Descargar Excel
         </button>
       </div>

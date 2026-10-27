@@ -1,4 +1,12 @@
-import { createClient } from "@/utils/supabase/server";
+import { auth } from "@/utils/auth/server";
+import {
+  getProfileByUserId,
+  ensureProfile,
+  getProjectByUserId,
+  getTotalVisits,
+  getLeads,
+  createProjectForUser,
+} from "@/utils/db-service";
 import { redirect } from "next/navigation";
 import { VisitsChart } from "@/app/components/Dashboard/VisitsChart";
 import { LeadsPieChart } from "@/app/components/Dashboard/LeadsPieChart";
@@ -35,75 +43,39 @@ function StatCard({
   );
 }
 
-function SectionTitle({ title }: { title: string }) {
-  return (
-    <h2 className="text-lg font-bold text-white mb-6 border-l-4 border-blue-600 pl-3">
-      {title}
-    </h2>
-  );
-}
-
-export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: session } = await auth.getSession();
+  if (!session?.user) redirect("/");
 
-  if (!user) redirect("/");
+  const user = session.user;
 
-  // 1. Obtener Perfil
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("username, avatar_url")
-    .eq("id", user.id)
-    .single();
+  // 1. Obtener o asegurar perfil
+  let profile = await getProfileByUserId(user.id);
+  if (!profile) {
+    profile = await ensureProfile(user.id, user.email, user.name);
+  }
 
   // 2. Obtener Proyecto
-  const { data: project } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
+  const project = await getProjectByUserId(user.id);
 
   // 3. Obtener Métricas y Leads
   let visitCount = 0;
-  let leads = [];
+  let leads: any[] = [];
 
   if (project) {
-    // Contar visitas totales
-    const { count } = await supabase
-      .from("visits")
-      .select("*", { count: "exact", head: true })
-      .eq("project_id", project.id);
-    visitCount = count || 0;
-
-    // Traer leads recientes
-    const { data: leadsData } = await supabase
-      .from("leads")
-      .select("*")
-      .eq("project_id", project.id)
-      .order("created_at", { ascending: false })
-      .limit(5);
-    leads = leadsData || [];
+    visitCount = await getTotalVisits(project.id);
+    leads = await getLeads(project.id, 5);
   }
 
   // ACTION: Crear Proyecto
-  async function createProject() {
+  async function createProjectAction() {
     "use server";
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: session } = await auth.getSession();
+    if (!session?.user) redirect("/");
 
-    await supabase.from("projects").insert({
-      user_id: user?.id,
-      title: "Mi Nuevo Proyecto",
-      description: "Edita esto en el dashboard",
-      theme_config: { primary: "#3b82f6" },
-      form_fields: ["nombre", "email"],
-    });
+    await createProjectForUser(session.user.id);
     revalidatePath("/dashboard");
   }
 
@@ -115,12 +87,12 @@ export default async function Dashboard() {
           Comienza tu LeadCard
         </h2>
         <p className="text-gray-400 mb-6 max-w-md text-center">
-          Crea tu primera landing page para empezar a medir resultados.
+          Crea tu primera landing page sobre Neon Lakebase Postgres para empezar a medir resultados.
         </p>
-        <form action={createProject}>
+        <form action={createProjectAction}>
           <button
             type="submit"
-            className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition cursor-pointer"
           >
             + Crear mi Landing Page
           </button>
@@ -138,11 +110,12 @@ export default async function Dashboard() {
             Panel de Control
           </h1>
           <p className="text-gray-400">
-            Bienvenido, {profile?.username || "Usuario"}
+            Bienvenido, {profile?.username || user.name || "Usuario"}
           </p>
         </div>
-        <div className="text-xs text-red-500 font-mono">
-          Server Status: Online
+        <div className="text-xs text-emerald-400 font-mono flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-800/60 px-3 py-1 rounded-full">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Neon Connected
         </div>
       </div>
 
@@ -154,11 +127,9 @@ export default async function Dashboard() {
       {/* Row 1: Top Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <StatCard title="Visitas Totales" value={visitCount}>
-          {/* Visual decoration for Visits */}
           <div className="w-full h-full bg-gradient-to-t from-blue-500/20 to-transparent" />
         </StatCard>
         <StatCard title="Leads Captados" value={leads.length}>
-          {/* Visual decoration for Leads */}
           <div className="flex items-end justify-end gap-1 h-full pb-6 pr-6 opacity-50">
             <div className="w-4 h-8 bg-purple-500 rounded-t"></div>
             <div className="w-4 h-12 bg-purple-500 rounded-t"></div>
@@ -187,7 +158,7 @@ export default async function Dashboard() {
       <div className="bg-[#111827] border border-gray-800 rounded-2xl overflow-hidden">
         <div className="p-6 flex justify-between items-center border-b border-gray-800">
           <h3 className="text-gray-200 font-bold">Últimos Contactos</h3>
-          <button className="text-xs bg-green-900/30 text-green-400 border border-green-900 px-3 py-1 rounded hover:bg-green-900/50 transition">
+          <button className="text-xs bg-green-900/30 text-green-400 border border-green-900 px-3 py-1 rounded hover:bg-green-900/50 transition cursor-pointer">
             Descargar CSV
           </button>
         </div>

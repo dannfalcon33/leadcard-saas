@@ -1,29 +1,20 @@
-import { createClient } from "@/utils/supabase/server";
+import { auth } from "@/utils/auth/server";
+import { getProjectByUserId, getProfileByUserId, ensureProfile } from "@/utils/db-service";
 import { redirect } from "next/navigation";
 import ProjectEditor from "../ProjectEditor";
 import { PublicLinkBox } from "@/app/components/Dashboard/PublicLinkBox";
 
-export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
 export default async function EditorPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: session } = await auth.getSession();
+  if (!session?.user) redirect("/");
 
-  if (!user) redirect("/");
-
-  const { data: project } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("username")
-    .eq("id", user.id)
-    .single();
+  const project = await getProjectByUserId(session.user.id);
+  let profile = await getProfileByUserId(session.user.id);
+  if (!profile) {
+    profile = await ensureProfile(session.user.id, session.user.email, session.user.name);
+  }
 
   if (!project) {
     return (

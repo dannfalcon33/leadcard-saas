@@ -1,10 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { getProfileByUsername, getProjectByUserId, recordVisit } from "@/utils/db-service";
 import PublicForm from "@/app/components/PublicForm";
 import { notFound } from "next/navigation";
 
-export const runtime = "edge";
-
-// Esto le dice a Next.js que esta página es dinámica y no debe cachearse estáticamente
+// Next.js dynamic rendering
 export const dynamic = "force-dynamic";
 
 export default async function UserLandingPage({
@@ -12,30 +10,18 @@ export default async function UserLandingPage({
 }: {
   params: Promise<{ username: string }>;
 }) {
-  const supabase = await createClient();
   const { username } = await params;
 
-  // 1. Buscamos el ID del usuario basado en el username de la URL
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, full_name, avatar_url")
-    .eq("username", username)
-    .single();
-
-  if (!profile) return notFound(); // Si no existe el usuario -> 404
+  // 1. Buscamos el perfil por username
+  const profile = await getProfileByUsername(username);
+  if (!profile) return notFound();
 
   // 2. Buscamos su proyecto activo
-  const { data: project } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("user_id", profile.id)
-    .single();
-
+  const project = await getProjectByUserId(profile.id);
   if (!project) return notFound();
 
-  // 3. REGISTRAR VISITA (Server Side Logic)
-  // Insertamos sin esperar respuesta (fire and forget) para no bloquear la carga
-  await supabase.from("visits").insert({ project_id: project.id });
+  // 3. Registrar visita (Neon Lakebase Postgres)
+  await recordVisit(project.id);
 
   // Extraemos configuración visual
   const theme = (project.theme_config as any) || { primary: "#3b82f6" };

@@ -1,12 +1,11 @@
 "use client";
 
-import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 
 interface Project {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   theme_config: {
     primary?: string;
     button_text?: string;
@@ -20,7 +19,6 @@ export default function ProjectEditor({
   project: Project;
   username: string;
 }) {
-  const supabase = createClient();
   const [loading, setLoading] = useState(false);
 
   // Estado local para el formulario (inicializado con los datos de la DB)
@@ -28,29 +26,39 @@ export default function ProjectEditor({
     title: project.title || "Mi Tarjeta Digital",
     description:
       project.description || "Hola, contáctame para servicios de desarrollo.",
-    theme_color: project.theme_config?.primary || "#3b82f6", // Azul por defecto
+    theme_color: project.theme_config?.primary || "#3b82f6",
     button_text: project.theme_config?.button_text || "Contactar Ahora",
   });
 
   const handleSave = async () => {
     setLoading(true);
-    const { error } = await supabase
-      .from("projects")
-      .update({
-        title: formData.title,
-        description: formData.description,
-        // Guardamos la config visual en el JSONB
-        theme_config: {
-          ...project.theme_config,
-          primary: formData.theme_color,
-          button_text: formData.button_text,
-        },
-      })
-      .eq("id", project.id);
+    try {
+      const res = await fetch("/api/projects", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: project.id,
+          title: formData.title,
+          description: formData.description,
+          theme_config: {
+            ...project.theme_config,
+            primary: formData.theme_color,
+            button_text: formData.button_text,
+          },
+        }),
+      });
 
-    if (error) alert("Error guardando: " + error.message);
-    else alert("¡Cambios guardados correctamente!");
-    setLoading(false);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Error al guardar");
+      }
+
+      alert("¡Cambios guardados correctamente en Neon!");
+    } catch (err: any) {
+      alert("Error guardando: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,7 +124,7 @@ export default function ProjectEditor({
         <button
           onClick={handleSave}
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition mt-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? "Guardando..." : "Guardar Cambios"}
         </button>

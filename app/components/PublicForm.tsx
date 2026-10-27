@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 
 interface Props {
@@ -18,32 +17,40 @@ export default function PublicForm({
   themeColor,
   buttonText,
 }: Props) {
-  const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  // Estado dinámico para guardar los datos del formulario
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.from("leads").insert({
-      project_id: projectId,
-      owner_id: ownerId, // Vital para el RLS
-      data: formData, // Guardamos el JSON completo
-    });
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId,
+          ownerId,
+          data: formData,
+        }),
+      });
 
-    if (error) {
-      alert("Error enviando datos: " + error.message);
-    } else {
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al enviar datos');
+      }
+
       setSuccess(true);
+    } catch (error: any) {
+      alert("Error enviando datos: " + error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  // Si ya envió, mostramos mensaje de éxito
   if (success) {
     return (
       <div className="text-center p-8 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400">

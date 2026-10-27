@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import Image from "next/image";
-import { createClient } from "@/utils/supabase/client";
+import { authClient } from "@/utils/auth/client";
 
 const menuItems = [
   { name: "Inicio", icon: Home, href: "/dashboard" },
@@ -29,10 +29,9 @@ export function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await authClient.signOut();
     router.push("/");
     router.refresh();
   };
